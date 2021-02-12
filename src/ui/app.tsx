@@ -8,7 +8,7 @@ class App extends React.Component {
   render() {
     return (
       <MemoryRouter>
-        <Window windowTitle="Hello !!!" minSize={minSize}>
+        <Window windowTitle="Hello" minSize={minSize}>
           <View style={containerStyle}>
             <AppRoutes />
           </View>
