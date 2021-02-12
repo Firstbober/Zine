@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Home</title>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.9.55/css/materialdesignicons.min.css">
+</head>
+
+<body>
+	<div class="app">
+		<div class="network-type-nav">
+			<div class="innav">
+				<div class="network">
+					<div class="icon">
+						<div class="icon-icon">
+							<img src="https://cdn.discordapp.com/avatars/319192366768455680/674f0ec42b951fe73accbcd0a8b56aee.png"
+								alt="">
+						</div>
+						<div class="icon-overlay">
+						</div>
+					</div>
+				</div>
+
+				<div class="network">
+					<div class="icon">
+						<div class="icon-icon">
+							<img src="https://cdn.discordapp.com/avatars/319192366768455680/674f0ec42b951fe73accbcd0a8b56aee.png"
+								alt="">
+						</div>
+						<div class="icon-overlay">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="network-body">
+			<div class="network-sidebar-rooms">
+				<div class="rooms">
+
+				</div>
+				<div class="current-user-info">
+
+				</div>
+			</div>
+
+			<div class="room-body">
+				<div class="room-header">
+
+				</div>
+				<div class="room-layout">
+					<div class="room-messages">
+
+					</div>
+					<div class="room-users">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<style>
+	body {
+		background-color: #121517;
+		display: flex;
+
+		height: 100vh;
+		width: 100vw;
+		margin: 0 auto;
+	}
+
+	.app {
+		padding: 0.5em;
+		display: flex;
+		gap: 0.5em;
+		width: 100%;
+	}
+
+	.network-type-nav {
+		background-color: #34363C;
+		height: 100%;
+		width: 68px;
+		border-radius: 6px;
+	}
+
+	.network-type-nav .innav {
+		padding-top: 0.5em;
+	}
+
+	.network-type-nav .network {
+		display: flex;
+	}
+
+	.network-type-nav .network .icon {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.network-type-nav .network .icon .icon-icon {
+		width: 42px;
+		height: 42px;
+
+		padding: 5px;
+		border-radius: 6px;
+	}
+
+	.network-type-nav .network .icon img {
+		object-fit: cover;
+		border-radius: 4px;
+
+		width: 42px;
+		height: 42px;
+	}
+
+	.network-type-nav .network .icon .icon-overlay {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+
+		position: fixed;
+		display: flex;
+	}
+
+	.network-body {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		gap: 0.5em;
+	}
+
+	.room-body {
+		flex: 1;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.room-body .room-header {
+		background-color: #26272c;
+		width: 100%;
+		height: 48px;
+
+		border-top-left-radius: 6px;
+		border-top-right-radius: 6px;
+
+		margin-bottom: 0.5em;
+	}
+
+	.room-body .room-layout {
+		height: 100%;
+		display: flex;
+		gap: 0.5em;
+	}
+
+	.room-body .room-layout .room-users {
+		width: 240px;
+		background-color: #42454c;
+		height: 100%;
+
+		border-bottom-left-radius: 6px;
+		border-bottom-right-radius: 6px;
+	}
+
+	.room-body .room-layout .room-messages {
+		flex: 1;
+		height: 100%;
+		background-color: #34363C;
+
+		border-bottom-left-radius: 6px;
+		border-bottom-right-radius: 6px;
+	}
+
+	.network-sidebar-rooms {
+		background-color: #42454c;
+		height: 100%;
+		width: 240px;
+		border-radius: 6px;
+	}
+
+	/* https://coolors.co/293366-3f51b5-535dd7-6769f8-444691-121517-202229-34363c-26272c-42454c */
+</style>
+
+</html>
