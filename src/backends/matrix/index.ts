@@ -1,17 +1,20 @@
-import { expose, BooleanResponse, Storage } from "../backend";
-
-/* Connectivity */
-import axios from "axios";
+import { expose, BooleanResponse, Storage, Room } from "../backend";
 
 /* Data storage */
 const dataStorage = new Storage("matrix");
+
+/* Connectivity */
+import axios from "axios";
 
 import validUrl from "valid-url";
 enum Endpoints {
 	WellKnown = "/.well-known/matrix/client",
 	SpecVersion = "/_matrix/client/versions",
 	Login = "/_matrix/client/r0/login",
-	WhoAmI = "/_matrix/client/r0/account/whoami"
+	WhoAmI = "/_matrix/client/r0/account/whoami",
+	Logout = "/_matrix/client/r0/logout",
+
+	Sync = "/_matrix/client/r0/sync"
 };
 
 const DiscoveryErrors = {
@@ -48,9 +51,18 @@ const reqPost = async (url: string, Endpoint: Endpoints, body: object) => {
 	}
 };
 
-const reqAuthGet = async (Endpoint: Endpoints) => {
+const reqAuthGet = async (Endpoint: Endpoints, query: object) => {
+	const serialize = function (obj: any) {
+		var str = [];
+		for (var p in obj)
+			if (obj.hasOwnProperty(p)) {
+				str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+			}
+		return str.join("&");
+	};
+
 	try {
-		let res = await axios.get(dataStorage.from("config")?.get("baseUrl") + Endpoint, {
+		let res = await axios.get(`${dataStorage.from("config")?.get("baseUrl")}${Endpoint}?${serialize(query)}`, {
 			validateStatus: null, headers: {
 				Authorization: `Bearer ${dataStorage.from("config")?.get("accessToken")}`
 			}
@@ -126,7 +138,6 @@ const actions = {
 
 		return { status: true, message: "" };
 	},
-
 	async login(username: string, password: string, sfa: string) {
 		if (dataStorage.from("config")?.get("loggedIn") == "true") {
 			return { status: true, message: "Logged in" };
@@ -197,12 +208,11 @@ const actions = {
 
 		return { status: true, message: "Logged in" };
 	},
-
 	async isLoggedIn() {
 		if (dataStorage.from("config")?.get("loggedIn") == "true") {
-			let res = await reqAuthGet(Endpoints.WhoAmI);
+			let res = await reqAuthGet(Endpoints.WhoAmI, {});
 
-			if(res.status != 200) {
+			if (res.status != 200) {
 				dataStorage.from("config")?.set("loggedIn", "false");
 				return false;
 			}
@@ -212,6 +222,67 @@ const actions = {
 			dataStorage.from("config")?.set("loggedIn", "false");
 			return false;
 		}
+	},
+	async logout() {
+		reqAuthPost(Endpoints.Logout, {});
+		dataStorage.from("config")?.set("loggedIn", "false");
+	},
+
+	async synchronize() {
+		if (dataStorage.from("state")?.get("synchronized") != "true") {
+			let res = await reqAuthGet(Endpoints.Sync, { full_state: true });
+
+			Object.entries(res.data.rooms.join).forEach(([id, room]: [any, any]) => {
+				let roomName = id.split(":")[0].substring(1);
+				let roomAvatarUrl = "";
+				let roomTopic = "";
+
+				room.state.events.forEach((event: any) => {
+					if (event.type == "m.room.name") {
+						roomName = event.content.name;
+					}
+
+					if (event.type == "m.room.avatar") {
+						roomAvatarUrl = event.content.url;
+					}
+
+					if (event.type == "m.room.topic") {
+						roomTopic = event.content.topic;
+					}
+
+					dataStorage.from("rooms")?.set(id, JSON.stringify(new Room(
+						roomName,
+						roomAvatarUrl,
+						roomTopic
+					)));
+				});
+			});
+
+			dataStorage.from("state")?.set("synchronized", "true");
+			dataStorage.from("state")?.set("nextBatch", res.data.next_batch);
+		} else {
+			let res = await reqAuthGet(Endpoints.Sync, { since: dataStorage.from("state")?.get("nextBatch") });
+			res;
+		}
+	},
+	async startSyncLoop() {
+		// Add setInterval with synchronize
+	},
+	async stopSyncLoop() {
+		// Remove interval here
+	},
+
+	async getRooms() {
+		let rooms: Array<Room> = [];
+
+		dataStorage.from("rooms")?.all().forEach((room) => {
+			let iR = JSON.parse(room.value);
+			iR.id = room.key;
+
+			rooms.push(iR);
+		});
+
+		return rooms;
 	}
 };
 

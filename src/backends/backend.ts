@@ -41,7 +41,7 @@ class DataSet {
 	set(key: string, value: string) {
 		let els = this.data.prepare(`SELECT * FROM ${this.name} WHERE key = ?`).all(key);
 
-		if(els.length > 0) {
+		if (els.length > 0) {
 			this.data.prepare(`UPDATE ${this.name} SET value = ? WHERE key = ?`).run(
 				value, key
 			);
@@ -59,6 +59,14 @@ class DataSet {
 
 	remove(key: string) {
 		this.data.prepare(`DELETE FROM ${this.name} WHERE key = ?`).run(key);
+	}
+
+	all() {
+		return this.data.prepare(`SELECT * FROM ${this.name}`).all();
+	}
+
+	removeAll() {
+		this.data.prepare(`DELETE FROM ${this.name}; VACUUM;`).run();
 	}
 };
 
@@ -84,11 +92,13 @@ class Storage {
 
 class Room {
 	name: string;
-	coverUrl: string;
+	avatarUrl: string;
+	topic: string;
 
-	constructor(name: string, coverUrl: string) {
+	constructor(name: string, avatarUrl: string, topic: string) {
 		this.name = name;
-		this.coverUrl = coverUrl;
+		this.avatarUrl = avatarUrl;
+		this.topic = topic;
 	}
 };
 
@@ -101,8 +111,15 @@ interface Backend {
 	name: string;
 
 	checkServerUrl(serverUrl: string): Promise<BooleanResponse>;
+
 	login(username: string, password: string, sfa: string): Promise<BooleanResponse>;
 	isLoggedIn(): Promise<boolean>;
+	logout(): Promise<void>;
+
+	synchronize(): Promise<void>;
+	startSyncLoop(): Promise<void>;
+	stopSyncLoop(): Promise<void>;
+
 	getRooms(): Promise<[]>;
 };
 

@@ -16,3 +16,26 @@ if (module.hot) {
 
 import Backends from "./backends/backends";
 const backends = new Backends();
+
+// Remove before commit
+
+backends.getBackend("matrix")?.isLoggedIn().then((isLogged) => {
+	if (isLogged) {
+		console.log("Logged in from last session");
+
+		backends.getBackend("matrix")?.synchronize();
+
+		backends.getBackend("matrix")?.getRooms().then((rooms) => {
+			console.log(rooms);
+		});
+	} else {
+		backends.getBackend("matrix")?.login("REDACTED", "REDACTED", "").then((info) => {
+			if (!info.status) {
+				console.error("Error:", info.message);
+				return;
+			}
+
+			console.log("Logged in from new session");
+		});
+	}
+});

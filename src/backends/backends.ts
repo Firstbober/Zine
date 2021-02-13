@@ -32,7 +32,6 @@ class WorkerBackend implements Backend {
 			serverUrl: serverUrl
 		});
 	}
-
 	login(username: string, password: string, sfa: string): Promise<BooleanResponse> {
 		return MakePromise(this.worker, "login", {
 			username: username,
@@ -40,9 +39,21 @@ class WorkerBackend implements Backend {
 			sfa: sfa
 		});
 	}
-
 	isLoggedIn(): Promise<boolean> {
 		return MakePromise(this.worker, "isLoggedIn", {});
+	}
+	logout(): Promise<void> {
+		return MakePromise(this.worker, "logout", {});
+	}
+
+	synchronize(): Promise<void> {
+		return MakePromise(this.worker, "synchronize", {});
+	}
+	startSyncLoop(): Promise<void> {
+		return MakePromise(this.worker, "startSyncLoop", {});
+	}
+	stopSyncLoop(): Promise<void> {
+		return MakePromise(this.worker, "stopSyncLoop", {});
 	}
 
 	getRooms(): Promise<[]> {
