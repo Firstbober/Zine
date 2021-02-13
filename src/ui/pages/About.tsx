@@ -6,20 +6,20 @@ import { QPushButtonSignals } from "@nodegui/nodegui";
 export default function About() {
   const history = useHistory();
   const handler = useEventHandler<QPushButtonSignals>(
-    { clicked: () => history.goBack() },
-    []
+	{ clicked: () => history.goBack() },
+	[]
   );
   return (
-    <View
-      style={`
-        height: '100%'; 
-        align-items: 'center';
-        justify-content: 'center';
-    `}
-    >
-      <Text>About</Text>
-      <Text>You are now looking at the About Page 😱</Text>
-      <Button on={handler} text={`Go to Home`}></Button>
-    </View>
+	<View
+	  style={`
+		height: '100%'; 
+		align-items: 'center';
+		justify-content: 'center';
+	`}
+	>
+	  <Text>About</Text>
+	  <Text>You are now looking at the About Page 😱</Text>
+	  <Button on={handler} text={`Go to Home`}></Button>
+	</View>
   );
 }

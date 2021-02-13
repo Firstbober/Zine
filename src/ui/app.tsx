@@ -6,15 +6,15 @@ const minSize = { width: 500, height: 520 };
 
 class App extends React.Component {
   render() {
-    return (
-      <MemoryRouter>
-        <Window windowTitle="Hello" minSize={minSize}>
-          <View style={containerStyle}>
-            <AppRoutes />
-          </View>
-        </Window>
-      </MemoryRouter>
-    );
+	return (
+	  <MemoryRouter>
+		<Window windowTitle="Hello" minSize={minSize}>
+		  <View style={containerStyle}>
+			<AppRoutes />
+		  </View>
+		</Window>
+	  </MemoryRouter>
+	);
   }
 }
 

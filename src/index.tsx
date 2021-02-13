@@ -8,9 +8,9 @@ Renderer.render(<App />);
 
 // This is for hot reloading (this will be stripped off in production by webpack)
 if (module.hot) {
-  module.hot.accept(["./ui/app"], function() {
-    Renderer.forceUpdate();
-  });
+	module.hot.accept(["./ui/app"], function() {
+		Renderer.forceUpdate();
+	});
 }
 */
 
