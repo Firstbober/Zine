@@ -33,8 +33,8 @@ module.exports = (env, argv) => {
           use: [{ loader: "file-loader" }]
         },
         {
-          test: /\.node/i,
-          use: [{ loader: "node-loader" }, { loader: "file-loader" }]
+          test: /\.node/,
+          use: "node-loader"
         }
       ]
     },

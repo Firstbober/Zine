@@ -1,4 +1,4 @@
-import { Backend, Room } from "./backend";
+import { BooleanResponse, Backend, Room } from "./backend";
 import { Worker } from "worker_threads";
 
 const MakePromise = <Pr>(worker: Worker, functionName: string, args: {}): Promise<Pr> => {
@@ -9,7 +9,7 @@ const MakePromise = <Pr>(worker: Worker, functionName: string, args: {}): Promis
 		});
 
 		worker.on("message", (msg) => {
-			if(msg.function == functionName) {
+			if (msg.function == functionName) {
 				resolve(msg.data);
 			}
 		});
@@ -24,22 +24,27 @@ class WorkerBackend implements Backend {
 		this.name = backendName;
 		this.worker = worker;
 
-		this.worker.postMessage({
-			function: "init",
-			params: {}
-		})
+		MakePromise(this.worker, "init", {});
 	}
 
-	login(username: string, password: string, sfa: string): Promise<string> {
+	checkServerUrl(serverUrl: string): Promise<BooleanResponse> {
+		return MakePromise(this.worker, "checkServerUrl", {
+			serverUrl: serverUrl
+		});
+	}
+
+	login(username: string, password: string, sfa: string): Promise<BooleanResponse> {
 		return MakePromise(this.worker, "login", {
 			username: username,
 			password: password,
 			sfa: sfa
 		});
 	}
+
 	isLoggedIn(): Promise<boolean> {
 		return MakePromise(this.worker, "isLoggedIn", {});
 	}
+
 	getRooms(): Promise<[]> {
 		return MakePromise(this.worker, "getRooms", {});
 	}

@@ -16,8 +16,3 @@ if (module.hot) {
 
 import Backends from "./backends/backends";
 const backends = new Backends();
-
-console.log(backends.getBackend("matrix")?.name);
-backends.getBackend("matrix")?.login("linia21", "bb", "cc").then((res) => {
-  console.log("Got", res);
-});
