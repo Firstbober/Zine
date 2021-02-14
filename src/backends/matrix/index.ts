@@ -1,4 +1,4 @@
-import { expose, BooleanResponse, Storage, Room } from "../backend";
+import { expose, BooleanResponse, Storage, Room, Message } from "../backend";
 
 /* Data storage */
 const dataStorage = new Storage("matrix");
@@ -7,6 +7,7 @@ const dataStorage = new Storage("matrix");
 import axios from "axios";
 
 import validUrl from "valid-url";
+import { copyFileSync } from "fs";
 enum Endpoints {
 	WellKnown = "/.well-known/matrix/client",
 	SpecVersion = "/_matrix/client/versions",
@@ -14,7 +15,14 @@ enum Endpoints {
 	WhoAmI = "/_matrix/client/r0/account/whoami",
 	Logout = "/_matrix/client/r0/logout",
 
-	Sync = "/_matrix/client/r0/sync"
+	UserAvatar = "/_matrix/client/r0/profile/{userId}/avatar_url",
+	UserProfile = "/_matrix/client/r0/profile/{userId}",
+	Sync = "/_matrix/client/r0/sync",
+
+	MediaThumbnail = "/_matrix/media/r0/thumbnail/{serverName}/{mediaId}",
+	MediaDownload = "/_matrix/media/r0/download/{serverName}/{mediaId}",
+
+	None = ""
 };
 
 const DiscoveryErrors = {
@@ -33,9 +41,18 @@ const LoginErrors = {
 	BAD_AUTH_DATA: { status: false, message: "The provided authentication data is incorrect" }
 }
 
-const reqGet = async (url: string, Endpoint: Endpoints) => {
+const serializeQuery = function (obj: any) {
+	var str = [];
+	for (var p in obj)
+		if (obj.hasOwnProperty(p)) {
+			str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+		}
+	return str.join("&");
+};
+
+const reqGet = async (url: string, Endpoint: Endpoints, query: object) => {
 	try {
-		let res = await axios.get(url + Endpoint, { validateStatus: null });
+		let res = await axios.get(`${url}${Endpoint}?${serializeQuery(query)}`, { validateStatus: null });
 		return res;
 	} catch (error) {
 		return { status: 999, data: null };
@@ -52,17 +69,8 @@ const reqPost = async (url: string, Endpoint: Endpoints, body: object) => {
 };
 
 const reqAuthGet = async (Endpoint: Endpoints, query: object) => {
-	const serialize = function (obj: any) {
-		var str = [];
-		for (var p in obj)
-			if (obj.hasOwnProperty(p)) {
-				str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-			}
-		return str.join("&");
-	};
-
 	try {
-		let res = await axios.get(`${dataStorage.from("config")?.get("baseUrl")}${Endpoint}?${serialize(query)}`, {
+		let res = await axios.get(`${dataStorage.from("config")?.get("baseUrl")}${Endpoint}?${serializeQuery(query)}`, {
 			validateStatus: null, headers: {
 				Authorization: `Bearer ${dataStorage.from("config")?.get("accessToken")}`
 			}
@@ -86,12 +94,14 @@ const reqAuthPost = async (Endpoint: Endpoints, body: object) => {
 	}
 };
 
+let messages: Map<string, Array<Message>> = new Map();
+
 const actions = {
 	async init() {
 	},
 
 	async checkServerUrl(serverUrl: string) {
-		let res = await reqGet(serverUrl, Endpoints.WellKnown);
+		let res = await reqGet(serverUrl, Endpoints.WellKnown, {});
 		let baseUrl = serverUrl;
 
 		switch (res.status) {
@@ -125,7 +135,7 @@ const actions = {
 				return DiscoveryErrors.FAIL_PROMPT;
 		}
 
-		res = await reqGet(baseUrl, Endpoints.SpecVersion);
+		res = await reqGet(baseUrl, Endpoints.SpecVersion, {});
 		if (res.status != 200) {
 			return DiscoveryErrors.FAIL_ERROR;
 		}
@@ -161,7 +171,7 @@ const actions = {
 		}
 		let baseUrl = sfa != "" ? sfa : "https://" + splittedId[1];
 
-		let res = await reqGet(baseUrl, Endpoints.Login);
+		let res = await reqGet(baseUrl, Endpoints.Login, {});
 		if (res.status != 200) {
 			return LoginErrors.RATE_LIMIT;
 		}
@@ -226,6 +236,9 @@ const actions = {
 	async logout() {
 		reqAuthPost(Endpoints.Logout, {});
 		dataStorage.from("config")?.set("loggedIn", "false");
+
+		dataStorage.from("state")?.removeAll();
+		dataStorage.from("rooms")?.removeAll();
 	},
 
 	async synchronize() {
@@ -253,23 +266,105 @@ const actions = {
 					dataStorage.from("rooms")?.set(id, JSON.stringify(new Room(
 						roomName,
 						roomAvatarUrl,
-						roomTopic
+						roomTopic,
+						id
 					)));
 				});
 			});
 
 			dataStorage.from("state")?.set("synchronized", "true");
 			dataStorage.from("state")?.set("nextBatch", res.data.next_batch);
+
+			res = await reqGet(
+				`${dataStorage.from("config")?.get("baseUrl")}${Endpoints.UserProfile.replace("{userId}", dataStorage.from("config")?.get("userId"))}`,
+				Endpoints.None,
+				{}
+			);
+
+			dataStorage.from("state")?.set("user", JSON.stringify({
+				displayName: res.data.displayname,
+				userId: dataStorage.from("config")?.get("userId"),
+				avatarUrl: res.data.avatar_url
+			}));
 		} else {
 			let res = await reqAuthGet(Endpoints.Sync, { since: dataStorage.from("state")?.get("nextBatch") });
-			res;
+
+			if(res.data == null) {
+				return;
+			}
+
+			Object.entries(res.data.rooms.join).forEach(([id, room]: [any, any]) => {
+				let msgs: Array<Message> = [];
+
+				room.timeline.events.forEach((event: any) => {
+					if (event.type == "m.room.message") {
+						if (event.content.msgtype == "m.text") {
+							msgs.push({
+								sender: event.sender,
+								content: event.content.body,
+								id: event.event_id
+							});
+						}
+					}
+				});
+
+				let lastMessages = messages.get(id);
+
+				if(lastMessages == undefined) {
+					lastMessages = msgs;
+					messages.set(id, [{}] as Array<Message>);
+				} else {
+					lastMessages = lastMessages.concat(msgs);
+				}
+
+				messages.set(id, lastMessages as Array<Message>);
+			});
+
+			dataStorage.from("state")?.set("nextBatch", res.data.next_batch);
 		}
 	},
 	async startSyncLoop() {
+		setInterval(() => {
+			actions.synchronize();
+		}, 500);
 		// Add setInterval with synchronize
 	},
 	async stopSyncLoop() {
 		// Remove interval here
+	},
+
+	async getCurrentUser() {
+		return JSON.parse(dataStorage.from("state")?.get("user"));
+	},
+
+	async imageUrlGetThumbnail(url: string, size: number) {
+		if (!url.startsWith("mxc")) {
+			return url;
+		}
+
+		let urlSplit = url.split('/');
+
+		let nRl = dataStorage.from("config")?.get("baseUrl") +
+			Endpoints.MediaThumbnail
+				.replace("{serverName}", dataStorage.from("config")?.get("userId").split(":")[1])
+				.replace("{mediaId}", urlSplit[urlSplit.length - 1])
+			+ "?" + serializeQuery({
+				width: size,
+				height: size,
+				method: "scale"
+			});
+		return nRl;
+	},
+	async imageUrlGetOrginal(url: string) {
+		if (!url.startsWith("mxc")) {
+			return url;
+		}
+		let urlSplit = url.split('/');
+
+		return dataStorage.from("config")?.get("baseUrl") +
+			Endpoints.MediaDownload
+				.replace("{serverName}", dataStorage.from("config")?.get("userId").split(":")[1])
+				.replace("{mediaId}", urlSplit[urlSplit.length - 1]);
 	},
 
 	async getRooms() {
@@ -283,6 +378,16 @@ const actions = {
 		});
 
 		return rooms;
+	},
+
+	async getMessagesInRoom(roomId: string) {
+		let msgs = messages.get(roomId);
+
+		if(msgs == undefined) {
+			return [];
+		} else {
+			return msgs;
+		}
 	}
 };
 

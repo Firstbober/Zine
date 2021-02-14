@@ -1,2 +1,3 @@
 # Zine
-Just good looking matrix client in Node.
+Simple matrix client in Node.
+I made it in one weekend. Please do not use it.

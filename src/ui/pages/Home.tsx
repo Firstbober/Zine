@@ -1,7 +1,11 @@
 import React from "react";
-import { Text, View, Button, useEventHandler } from "@nodegui/react-nodegui";
+
+import { Text, View, Button, useEventHandler} from "@nodegui/react-nodegui";
 import { useHistory } from "react-router";
 import { QPushButtonSignals } from "@nodegui/nodegui";
+
+import ChannelList from "../components/ChannelList";
+import MainChatArea from "../components/MainChatArea";
 
 export default function Home() {
 	const history = useHistory();
@@ -10,16 +14,14 @@ export default function Home() {
 		[]
 	);
 	return (
-		<View
-			style={`
-				height: '100%'; 
-				align-items: 'center';
-				justify-content: 'center';
-			`}
-		>
-			<Text>Home Page</Text>
-			<Text>You are now looking at Home Page 🤓</Text>
-			<Button on={handler} text="Go to about"></Button>
+		<View style={homeStyle}>
+			<ChannelList />
+			<MainChatArea />
 		</View>
 	);
 }
+
+const homeStyle = `
+	flex-direction: row;
+	flex: 1;
+`

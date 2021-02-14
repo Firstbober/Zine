@@ -91,15 +91,29 @@ class Storage {
 };
 
 class Room {
+	id: string;
 	name: string;
 	avatarUrl: string;
 	topic: string;
 
-	constructor(name: string, avatarUrl: string, topic: string) {
+	constructor(name: string, avatarUrl: string, topic: string, id: string) {
 		this.name = name;
 		this.avatarUrl = avatarUrl;
 		this.topic = topic;
+		this.id = id;
 	}
+};
+
+interface Message {
+	sender: string,
+	content: string,
+	id: string
+}
+
+interface User {
+	displayName: string,
+	userId: string,
+	avatarUrl: string
 };
 
 interface BooleanResponse {
@@ -120,7 +134,13 @@ interface Backend {
 	startSyncLoop(): Promise<void>;
 	stopSyncLoop(): Promise<void>;
 
+	getCurrentUser(): Promise<User>;
+
+	imageUrlGetThumbnail(url: string, size: number): Promise<string>;
+	imageUrlGetOrginal(url: string): Promise<string>;
+
 	getRooms(): Promise<[]>;
+	getMessagesInRoom(roomId: string): Promise<Array<Message>>;
 };
 
-export { expose, DataSet, Storage, Room, BooleanResponse, Backend };
+export { expose, DataSet, Storage, Room, BooleanResponse, Backend, User, Message };

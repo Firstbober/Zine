@@ -1,23 +1,24 @@
-/*
 import { Renderer } from "@nodegui/react-nodegui";
 import React from "react";
 import App from "./ui/app";
+
+import backends from "./backends/backends";
+backends.setCurrentBackend("matrix");
+backends.currentBackend?.synchronize();
+backends.currentBackend?.startSyncLoop();
 
 process.title = "Zine";
 Renderer.render(<App />);
 
 // This is for hot reloading (this will be stripped off in production by webpack)
 if (module.hot) {
-	module.hot.accept(["./ui/app"], function() {
+	module.hot.accept(["./ui/app"], function () {
 		Renderer.forceUpdate();
 	});
 }
-*/
 
-import Backends from "./backends/backends";
-const backends = new Backends();
+/* Some reference stuff for later
 
-// Remove before commit
 
 backends.getBackend("matrix")?.isLoggedIn().then((isLogged) => {
 	if (isLogged) {
@@ -26,7 +27,7 @@ backends.getBackend("matrix")?.isLoggedIn().then((isLogged) => {
 		backends.getBackend("matrix")?.synchronize();
 
 		backends.getBackend("matrix")?.getRooms().then((rooms) => {
-			console.log(rooms);
+			//console.log(rooms);
 		});
 	} else {
 		backends.getBackend("matrix")?.login("REDACTED", "REDACTED", "").then((info) => {
@@ -39,3 +40,4 @@ backends.getBackend("matrix")?.isLoggedIn().then((isLogged) => {
 		});
 	}
 });
+/**/
