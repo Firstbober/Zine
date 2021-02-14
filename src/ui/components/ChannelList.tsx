@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Image, Text, Button, ScrollArea, useEventHandler } from "@nodegui/react-nodegui";
 import { QPushButtonSignals } from "@nodegui/nodegui";
+import { useHistory } from "react-router";
 
 import Channel from "./Channel";
 
@@ -10,6 +11,7 @@ import backends from "../../backends/backends";
 
 export default function ChannelList() {
 	const [rooms, setRooms] = useState([]);
+	const history = useHistory();
 
 	useEffect(() => {
 		if (rooms.length == 0) {
@@ -36,7 +38,13 @@ export default function ChannelList() {
 				<View style={userInfoStyle}>
 					<View style={userInfoAvatarStyle}></View>
 					<Text style={userInfoDisplayStyle}>Firstbober</Text>
-					<Button style={userInfoSettingsStyle}></Button>
+					<Button style={userInfoSettingsStyle} on={{
+						clicked: () => {
+							backends.currentBackend?.logout().then(() => {
+								history.push("/");
+							});
+						}
+					}}></Button>
 				</View>
 			</View>
 		</View>

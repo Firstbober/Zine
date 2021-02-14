@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import { Text, View, Button, useEventHandler} from "@nodegui/react-nodegui";
-import { useHistory } from "react-router";
-import { QPushButtonSignals } from "@nodegui/nodegui";
+import { Text, View, Button, useEventHandler } from "@nodegui/react-nodegui";
 
 import ChannelList from "../components/ChannelList";
 import MainChatArea from "../components/MainChatArea";
 
+import backends from "../../backends/backends";
+
 export default function Home() {
-	const history = useHistory();
-	const handler = useEventHandler<QPushButtonSignals>(
-		{ "clicked": () => history.push("/about") },
-		[]
-	);
+	useEffect(() => {
+		backends.currentBackend?.synchronize();
+		backends.currentBackend?.startSyncLoop();
+	}, []);
+
 	return (
 		<View style={homeStyle}>
 			<ChannelList />

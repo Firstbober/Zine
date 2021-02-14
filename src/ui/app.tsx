@@ -5,19 +5,21 @@ const minSize = { width: 1024, height: 600 };
 import { Window, View, hot } from "@nodegui/react-nodegui";
 
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 class App extends React.Component {
-  render() {
-	return (
-	  <MemoryRouter>
-		<Window windowTitle="Zine" minSize={minSize} styleSheet={globalStylesheet}>
-		  <View style={containerStyle}>
-		 	 <Route exact path="/" component={Home} />
-		  </View>
-		</Window>
-	  </MemoryRouter>
-	);
-  }
+	render() {
+		return (
+			<MemoryRouter>
+				<Window windowTitle="Zine" minSize={minSize} styleSheet={globalStylesheet}>
+					<View style={containerStyle}>
+						<Route exact path="/home" component={Home} />
+						<Route exact path="/" component={Login} />
+					</View>
+				</Window>
+			</MemoryRouter>
+		);
+	}
 }
 
 const globalStylesheet = `
