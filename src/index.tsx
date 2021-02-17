@@ -1,16 +1,12 @@
-import { Renderer } from "@nodegui/react-nodegui";
-import React from "react";
-import App from "./ui/app";
+import "solid-js";
+import { render } from 'solid-js/web';
+import './css/index.css';
+import App from './App';
+import { Router, pathIntegration } from '@rturnq/solid-router';
 
-import backends from "./backends/backends";
-backends.setCurrentBackend("matrix");
-
-process.title = "Zine";
-Renderer.render(<App />);
-
-// This is for hot reloading (this will be stripped off in production by webpack)
-if (module.hot) {
-	module.hot.accept(["./ui/app"], function () {
-		Renderer.forceUpdate();
-	});
-}
+// @ts-ignore
+render((
+	<Router integration={pathIntegration()}>
+		<App />
+	</Router>
+), document.getElementById('root') as Node);
