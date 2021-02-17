@@ -1,4 +1,4 @@
-import "./Login.css";
+import style from "./Login.module.css";
 import { createSignal } from "solid-js";
 
 const backgroundImage = require(`../../public/login/backgrounds/${Math.floor(Math.random() * (7 - 0)) + 1}.webp`);
@@ -6,42 +6,36 @@ const backgroundImage = require(`../../public/login/backgrounds/${Math.floor(Mat
 import iconDns from "../../public/icons/dns.svg";
 import matrixIcon from "../../public/icons/matrix.svg";
 
+import Dialog from "../components/login/dialog";
+
 function LoginView() {
 	const [canContinue, setContinuePossibility] = createSignal(false);
 
 	return (
 		<div
-			class="view loginview"
+			class={`view ${style.loginview}`}
 			style={`background-image: url(${backgroundImage})`}
 		>
-			<div class="login-dialog">
-				<div class="header">
-					<img src={iconDns} />
-					<div>
-						<span>Chat network</span>
-						<span>Select chat network you want to use</span>
+			<Dialog
+				headerIcon={iconDns}
+				headerText="Chat network"
+				headerDesc="Select chat network you want to use"
+			>
+				<div class={style["network-select"]}>
+					<div class={`${style.option} ${style.selected}`} >
+						<img src={matrixIcon} />
+						<span>Matrix</span>
 					</div>
 				</div>
-				<div class="content">
-					<div class="network-select">
-						<div class="option selected">
-							<img src={matrixIcon} />
-							<span>Matrix</span>
-						</div>
-					</div>
-					<div class="network-options">
-						<input type="text" placeholder="Homeserver URL" onInput={(ev: any) => {
-							setContinuePossibility(ev.target.value.length > 0);
-						}} />
-					</div>
-					<div class="continue">
-						<button class={`next ${canContinue() ? `` : `btn-disabled`}`}>Next</button>
-					</div>
+				<div class={style["network-options"]}>
+					<input type="text" placeholder="Homeserver URL" onInput={(ev: any) => {
+						setContinuePossibility(ev.target.value.length > 0);
+					}} />
 				</div>
-				<div class="load-animation">
-
+				<div class={style.continue}>
+					<button class={`${style.next} ${canContinue() ? `` : style["btn-disabled"]}`}>Next</button>
 				</div>
-			</div>
+			</Dialog>
 		</div>
 	);
 }

@@ -370,7 +370,7 @@ const actions = {
 	async getRooms() {
 		let rooms: Array<Room> = [];
 
-		dataStorage.from("rooms")?.all().forEach((room) => {
+		dataStorage.from("rooms")?.all().forEach((room: any) => {
 			let iR = JSON.parse(room.value);
 			iR.id = room.key;
 

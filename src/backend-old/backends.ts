@@ -1,6 +1,6 @@
 import { BooleanResponse, Backend, Room, User, Message } from "./backend";
 import { Worker } from "worker_threads";
-import DataDirs from "../datadir";
+import DataDirs from "./datadir";
 import events from "events";
 import axios from "axios";
 import path from "path";

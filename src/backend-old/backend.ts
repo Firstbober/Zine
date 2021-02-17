@@ -1,9 +1,9 @@
 import { parentPort } from 'worker_threads';
-import DataDirs from "../datadir";
+import DataDirs from "./datadir";
 import fs from "fs";
 import sqlite from "better-sqlite3";
 
-const expose = (funcs: {}) => {
+export const expose = (funcs: {}) => {
 	let functionNames: string[] = [];
 	let functionBody: Function[] = [];
 
@@ -26,7 +26,7 @@ const expose = (funcs: {}) => {
 	});
 };
 
-class DataSet {
+export class DataSet {
 	name: string;
 	data: sqlite.Database;
 
@@ -70,7 +70,7 @@ class DataSet {
 	}
 };
 
-class Storage {
+export class Storage {
 	backendName: string;
 	dataSets: Map<string, DataSet>;
 
@@ -90,7 +90,7 @@ class Storage {
 	}
 };
 
-class Room {
+export class Room {
 	id: string;
 	name: string;
 	avatarUrl: string;
@@ -104,24 +104,24 @@ class Room {
 	}
 };
 
-interface Message {
+export interface Message {
 	sender: string,
 	content: string,
 	id: string
 }
 
-interface User {
+export interface User {
 	displayName: string,
 	userId: string,
 	avatarUrl: string
 };
 
-interface BooleanResponse {
+export interface BooleanResponse {
 	status: boolean,
 	message: string
 };
 
-interface Backend {
+export interface Backend {
 	name: string;
 
 	checkServerUrl(serverUrl: string): Promise<BooleanResponse>;
@@ -142,5 +142,3 @@ interface Backend {
 	getRooms(): Promise<[]>;
 	getMessagesInRoom(roomId: string): Promise<Array<Message>>;
 };
-
-export { expose, DataSet, Storage, Room, BooleanResponse, Backend, User, Message };
