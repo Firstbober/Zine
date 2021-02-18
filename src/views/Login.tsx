@@ -1,10 +1,10 @@
 import style from "./Login.module.css";
 import { createSignal } from "solid-js";
 
-const backgroundImage = require(`../../public/login/backgrounds/${Math.floor(Math.random() * (7 - 0)) + 1}.webp`);
+const backgroundImage = require(`../../assets/login/backgrounds/${Math.floor(Math.random() * (7 - 0)) + 1}.webp`);
 
-import iconDns from "../../public/icons/dns.svg";
-import matrixIcon from "../../public/icons/matrix.svg";
+import iconDns from "../../assets/icons/dns.svg";
+import matrixIcon from "../../assets/icons/matrix.svg";
 
 import Dialog from "../components/login/dialog";
 

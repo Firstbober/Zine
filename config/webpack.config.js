@@ -13,6 +13,7 @@ const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const postcssNormalize = require("postcss-normalize");
 const safePostCssParser = require("postcss-safe-parser");
+const WorkerPlugin = require('worker-plugin');
 
 const getClientEnvironment = require("./env");
 const paths = require("./paths");
@@ -479,7 +480,9 @@ module.exports = webpackEnv => {
             // public/ and not a SPA route
             new RegExp("/[^/]+\\.[^/]+$")
           ]
-        })
+        }),
+
+        new WorkerPlugin()
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
