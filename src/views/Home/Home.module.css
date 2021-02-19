@@ -2,3 +2,8 @@
 	background-color: #121517;
 	display: flex;
 }
+
+.toplevel {
+	padding: 0.5em;
+	display: flex;
+}
