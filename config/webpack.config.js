@@ -398,6 +398,8 @@ module.exports = webpackEnv => {
       ]
     },
     plugins: [
+      new WorkerPlugin(),
+
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
@@ -480,9 +482,7 @@ module.exports = webpackEnv => {
             // public/ and not a SPA route
             new RegExp("/[^/]+\\.[^/]+$")
           ]
-        }),
-
-        new WorkerPlugin()
+        })
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
