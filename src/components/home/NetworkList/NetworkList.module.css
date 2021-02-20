@@ -1,6 +1,6 @@
 .NetworkList {
 	height: 100%;
-	width: 68px;
+	width: 58px;
 	background-color: #34363C;
 	border-radius: 6px;
 }
@@ -19,7 +19,7 @@
 }
 
 .classifier {
-	width: 48px;
+	width: 42px;
 	height: 2px;
 	background-color: #52555e;
 	margin-bottom: 0.8em;

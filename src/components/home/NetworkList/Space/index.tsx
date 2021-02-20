@@ -11,8 +11,6 @@ const Space = ({ imgSrc, colors, flares, selected, newMessage, iconified }: any)
 	if (colors == undefined)
 		colors = [];
 
-	console.log(colors);
-
 	return (
 		<div class={`${style.space} ${iconified ? style["icon-space"] : ""}`}>
 			<div class={style["space-icon-area"]}>
