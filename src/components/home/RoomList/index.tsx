@@ -1,40 +1,37 @@
 import style from "./RoomList.module.css";
+import { onMount } from "solid-js";
 
-import icon_exitToApp from "/assets/icons/exit-to-app.svg";
-import icon_magnify from "/assets/icons/magnify.svg";
+import UserInfo from "./UserInfo";
+import Category from "./Category";
+import Room from "./Room";
 
 import icon_nature_people from "/assets/icons/nature-people.svg";
-const NoFriends = () => {
+const NoRooms = ({ text, iconUrl }: any) => {
 	return (
-		<div class={style["no-friends"]}>
-			<img src={icon_nature_people} />
-			<span>You have no friends</span>
+		<div class={style["no-rooms"]}>
+			<img src={iconUrl} />
+			<span>{text}</span>
 		</div>
 	)
 };
 
-import style_UserInfo from "./UserInfo.module.css";
-const UserInfo = () => {
-	return (
-		<div class={style_UserInfo["user-info"]}>
-			<img src="https://gacko.pl/_matrix/media/r0/download/gacko.pl/EEVCCmdzIUkcnRjuTdJOvsQh" />
-			<div>
-				<span title="ultra_long_nickname">ultra_long_nickname</span>
-				<button title="Log out"><img src={icon_exitToApp} /></button>
-			</div>
-		</div>
-	);
-};
-
-const Category = ({title, children}: any) => {
-	return (
-		<div>
-
-		</div>
-	)
-}
-
+import icon_magnify from "/assets/icons/magnify.svg";
 const RoomList = () => {
+	onMount(() => {
+		if (window.navigator.appVersion.includes("AppleWebKit")) {
+			let animFrameId = window.requestAnimationFrame(() => {
+				let found = document.getElementsByClassName("simplebar-content-wrapper");
+				for (let index = 0; index < found.length; index++) {
+					let item: any = found[index];
+					item.classList.add("simplebar-webkit-content-wrapper-override");
+					item.classList.remove("simplebar-content-wrapper");
+				}
+
+				window.cancelAnimationFrame(animFrameId);
+			});
+		}
+	});
+
 	return (
 		<div class={style.RoomList}>
 			<div class={style["room-container"]}>
@@ -44,13 +41,49 @@ const RoomList = () => {
 						<img src={icon_magnify} />
 					</div>
 				</div>
-				<div class={style.scroll}>
-					<NoFriends/>
+				<div class={style.scroll} data-simplebar>
+					<div class={style["scroll-container"]}>
+						<Category title="Rooms">
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/xubIlQAcsRyqYCnEjmcCfUht"
+								title="Test room 1"
+								isPublic={true}
+							/>
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/wGRTUJEmQDLtLGAWLQDfvwHZ"
+								title="Test room 1"
+								activity="busy"
+							/>
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/AaUsOUbTqGHEombamfBEYIlC"
+								title="Test room 1"
+								activity="online"
+							/>
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/wGRTUJEmQDLtLGAWLQDfvwHZ"
+								title="Test room 1"
+							/>
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/wGRTUJEmQDLtLGAWLQDfvwHZ"
+								title="Test room 1"
+								activity="unavailable"
+							/>
+							<Room
+								avatarUrl="https://gacko.pl/_matrix/media/r0/download/gacko.pl/AaUsOUbTqGHEombamfBEYIlC"
+								title="Test room 1"
+								activity="offline"
+							/>
+						</Category>
+					</div>
 				</div>
 			</div>
 			<UserInfo />
 		</div>
 	)
 };
+
+/*
+				
+*/
 
 export default RoomList;

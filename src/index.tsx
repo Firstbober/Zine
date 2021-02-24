@@ -4,6 +4,9 @@ import './css/index.css';
 import App from './App';
 import { Router, pathIntegration } from '@rturnq/solid-router';
 
+import 'simplebar';
+import 'simplebar/dist/simplebar.css';
+
 render(() => (
 	<Router integration={pathIntegration()}>
 		<App />

@@ -1,0 +1,51 @@
+.category {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+
+	margin-top: 0.5em;
+}
+
+.header {
+	display: flex;
+	font-weight: bold;
+	font-size: 0.8em;
+	align-items: center;
+	cursor: pointer;
+	margin-bottom: 0.5em;
+	user-select: none;
+}
+
+.header div {
+	margin-left: 4px;
+	margin-right: 4px;
+	transition-duration: 150ms;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.header div img {
+	width: 16px;
+	height: 16px;
+	filter: invert(70%);
+}
+
+.header div.hidden {
+	transform: rotate(-90deg);
+}
+
+.header span {
+	color: #aaaaaa;
+}
+
+.content {
+	height: 128px;
+	flex: 1;
+	padding-right: 6px;
+	margin-left: 8px;
+}
+
+.content.hidden {
+	display: none;
+}

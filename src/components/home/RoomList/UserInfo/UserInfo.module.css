@@ -8,6 +8,7 @@
 
 	display: flex;
 	align-items: center;
+	z-index: 2;
 }
 
 .user-info > img {
@@ -53,6 +54,7 @@
 
 .user-info div button img {
 	filter: invert(80%);
+	user-select: none;
 }
 
 .user-info div button:hover {
